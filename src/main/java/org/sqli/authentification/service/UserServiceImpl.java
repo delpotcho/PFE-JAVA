@@ -4,20 +4,25 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.sqli.authentification.dao.GroupRepository;
 import org.sqli.authentification.dao.UserRepository;
 import org.sqli.authentification.dto.UserDtoRequest;
 import org.sqli.authentification.dto.UserDtoResponse;
+import org.sqli.authentification.dto.UserFormDtoRequest;
+import org.sqli.authentification.entitie.Group;
 import org.sqli.authentification.entitie.User;
 import org.sqli.authentification.exception.ResponseMessage;
 
 @Service
 public class UserServiceImpl implements UserService {
-    UserRepository userRepository;
-    ModelMapper modelMapper;
+    private UserRepository userRepository;
+    private ModelMapper modelMapper;
+    private GroupRepository groupRepository;
 
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
+    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, GroupRepository groupRepository) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.groupRepository = groupRepository;
     }
 
     @Override
@@ -57,5 +62,15 @@ public class UserServiceImpl implements UserService {
         }
         throw new ResponseMessage("Authentication error");
 
+    }
+     //5. Création de compte : Best case
+    @Override
+    public UserDtoResponse create(UserFormDtoRequest userFormDtoRequest) {
+        Group groupUser = groupRepository.findByName(userFormDtoRequest.getGroup());
+        User useEntity = modelMapper.map(userFormDtoRequest,User.class);
+        useEntity.setGroup(groupUser);
+        User test = useEntity;
+        User save = userRepository.save(useEntity);
+        return  modelMapper.map(save ,UserDtoResponse.class);
     }
 }
