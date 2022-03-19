@@ -27,6 +27,11 @@ public class UserServiceImpl implements UserService {
         User getEntityUser = userRepository.findByLogin(user.getLogin());
         //2. Authentification : Mot de passe ou login erronés
         if (getEntityUser !=null){
+            //4. Authentification : Dépassement de 3 tentatives
+            if (getEntityUser.getLoginAttempts() >= 3) {
+
+                throw new ResponseMessage("You have reached 3 failed authentication attempts, your account will be disabled");
+            }
 
             if (getEntityUser.getPassword().equals(userDtoRequest.getPassword())){
 
@@ -42,6 +47,11 @@ public class UserServiceImpl implements UserService {
                     }
                 });
                 return modelMapper.map(userRepository.findByLoginAndPassword(user.getLogin(),user.getPassword()), UserDtoResponse.class);
+            }else{
+
+                getEntityUser.setLoginAttempts(getEntityUser.getLoginAttempts() + 1);
+                userRepository.save(getEntityUser);
+
             }
 
         }
