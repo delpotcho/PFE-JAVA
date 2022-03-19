@@ -5,24 +5,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.sqli.authentification.dto.UserDtoRequest;
 import org.sqli.authentification.dto.UserDtoResponse;
 import org.sqli.authentification.service.UserService;
 
 @RestController
+@RequestMapping("/auth")
 public class AuthController {
     @Autowired
     private UserService userService;
-    @PostMapping("/auth")
-    public ResponseEntity<UserDtoResponse> authantification (@RequestBody UserDtoRequest userDtoRequest){
 
-        UserDtoResponse userDtoResponse = userService.getUser(userDtoRequest);
+    @PostMapping
+    public ResponseEntity<UserDtoResponse> authantification(@RequestBody UserDtoRequest userDtoRequest) {
 
-
-
-return new ResponseEntity<>(userDtoResponse ,HttpStatus.OK);
+        return new ResponseEntity<>(userService.FindUserByLoginAndPassword(userDtoRequest), HttpStatus.OK);
     }
 
 

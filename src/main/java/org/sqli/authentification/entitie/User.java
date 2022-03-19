@@ -11,13 +11,14 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "user")
+@Table(name = "USER")
 public class User {
     @Id
     @GeneratedValue
     private Long id ;
     private String login;
     private String password ;
+    @Column(name = "loginattempts")
     private int loginAttempts ;
     @ManyToOne
     private Group group;

@@ -1,6 +1,7 @@
 package org.sqli.authentification.service;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.sqli.authentification.dao.UserRepository;
@@ -18,27 +19,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDtoResponse create(UserDtoRequest userDtoRequest) {
-        User useEntity = modelMapper.map(userDtoRequest,User.class);
-        User save = userRepository.save(useEntity);
+    public UserDtoResponse  FindUserByLoginAndPassword(UserDtoRequest userDtoRequest) {
+        //1. Authentification : Best case
+        User user = modelMapper.map(userDtoRequest, User.class);
+        modelMapper.addMappings(new PropertyMap<User, UserDtoResponse>() {
+            @Override
+            protected void configure() {
+                map().setGroup(source.getGroup().getName());
+            }
+        });
 
-
-        return  modelMapper.map(save ,UserDtoResponse.class);
-    }
-
-    @Override
-    public void delete(UserDtoRequest userDtoRequest) {
-        User useEntity = modelMapper.map(userDtoRequest,User.class);
-        userRepository.delete(useEntity);
-
-
-    }
-
-    @Override
-    public UserDtoResponse getUser(UserDtoRequest userDtoRequest) {
-        User useEntity = modelMapper.map(userDtoRequest, User.class);
-        User get = userRepository.findByLoginAndPassword(useEntity.getLogin(), useEntity.getPassword());
-
-        return modelMapper.map(get, UserDtoResponse.class);
+        return modelMapper.map(userRepository.findByLoginAndPassword(user.getLogin(),user.getPassword()), UserDtoResponse.class);
     }
 }

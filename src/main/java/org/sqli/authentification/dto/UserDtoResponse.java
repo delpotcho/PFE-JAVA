@@ -8,7 +8,8 @@ import org.sqli.authentification.entitie.Group;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDtoResponse {
+
     private Long id ;
     private String login;
-    private Group group;
+    private String group;
 }
