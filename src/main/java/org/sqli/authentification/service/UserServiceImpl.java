@@ -8,6 +8,8 @@ import org.sqli.authentification.dao.UserRepository;
 import org.sqli.authentification.dto.UserDtoRequest;
 import org.sqli.authentification.dto.UserDtoResponse;
 import org.sqli.authentification.entitie.User;
+import org.sqli.authentification.exception.ResponseMessage;
+
 @Service
 public class UserServiceImpl implements UserService {
     UserRepository userRepository;
@@ -22,13 +24,23 @@ public class UserServiceImpl implements UserService {
     public UserDtoResponse  FindUserByLoginAndPassword(UserDtoRequest userDtoRequest) {
         //1. Authentification : Best case
         User user = modelMapper.map(userDtoRequest, User.class);
-        modelMapper.addMappings(new PropertyMap<User, UserDtoResponse>() {
-            @Override
-            protected void configure() {
-                map().setGroup(source.getGroup().getName());
-            }
-        });
+        User getEntityUser = userRepository.findByLogin(user.getLogin());
+        //2. Authentification : Mot de passe ou login erronés
+        if (getEntityUser !=null){
 
-        return modelMapper.map(userRepository.findByLoginAndPassword(user.getLogin(),user.getPassword()), UserDtoResponse.class);
+            if (getEntityUser.getPassword().equals(userDtoRequest.getPassword())){
+
+                modelMapper.addMappings(new PropertyMap<User, UserDtoResponse>() {
+                    @Override
+                    protected void configure() {
+                        map().setGroup(source.getGroup().getName());
+                    }
+                });
+                return modelMapper.map(userRepository.findByLoginAndPassword(user.getLogin(),user.getPassword()), UserDtoResponse.class);
+            }
+         
+        }
+        throw new ResponseMessage("Authentication error");
+
     }
 }
