@@ -80,13 +80,15 @@ public class UserServiceImpl implements UserService {
         User useEntity = modelMapper.map(userFormDtoRequest,User.class);
         useEntity.setGroup(groupUser);
         User test = useEntity;
-
         User save = userRepository.save(useEntity);
-
-
-
-
-
         return  modelMapper.map(save ,UserDtoResponse.class);
+    }
+    //8. Suppression de compte
+    @Override
+    public void delete( String login) {
+        User user = userRepository.findByLogin(login);
+
+        userRepository.delete(user);
+
     }
 }

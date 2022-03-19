@@ -8,5 +8,6 @@ import org.sqli.authentification.entitie.User;
 public interface UserRepository extends JpaRepository<User,Long> {
     User findByLoginAndPassword(String login, String password);
     User findByLogin(String login);
+    Long deleteByLogin(String login);
 }
 
