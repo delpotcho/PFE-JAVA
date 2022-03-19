@@ -63,14 +63,28 @@ public class UserServiceImpl implements UserService {
         throw new ResponseMessage("Authentication error");
 
     }
-     //5. Création de compte : Best case
+//5. Création de compte : Best case
     @Override
     public UserDtoResponse create(UserFormDtoRequest userFormDtoRequest) {
+
         Group groupUser = groupRepository.findByName(userFormDtoRequest.getGroup());
+        //6. Création de compte : Groupe KO
+        if ( groupUser == null){
+            throw new ResponseMessage("Group '" + userFormDtoRequest.getGroup() + "' is not valid");
+        }
+        User userLogin  = userRepository.findByLogin(userFormDtoRequest.getLogin());
+
+
         User useEntity = modelMapper.map(userFormDtoRequest,User.class);
         useEntity.setGroup(groupUser);
         User test = useEntity;
+
         User save = userRepository.save(useEntity);
+
+
+
+
+
         return  modelMapper.map(save ,UserDtoResponse.class);
     }
 }
