@@ -30,6 +30,11 @@ public class UserServiceImpl implements UserService {
 
             if (getEntityUser.getPassword().equals(userDtoRequest.getPassword())){
 
+                //3. Authentification : Utilisateur désactivé
+                if (!getEntityUser.isEnabled()) {
+
+                    throw new ResponseMessage("User disabled");
+                }
                 modelMapper.addMappings(new PropertyMap<User, UserDtoResponse>() {
                     @Override
                     protected void configure() {
@@ -38,7 +43,7 @@ public class UserServiceImpl implements UserService {
                 });
                 return modelMapper.map(userRepository.findByLoginAndPassword(user.getLogin(),user.getPassword()), UserDtoResponse.class);
             }
-         
+
         }
         throw new ResponseMessage("Authentication error");
 
