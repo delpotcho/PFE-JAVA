@@ -73,8 +73,10 @@ public class UserServiceImpl implements UserService {
             throw new ResponseMessage("Group '" + userFormDtoRequest.getGroup() + "' is not valid");
         }
         User userLogin  = userRepository.findByLogin(userFormDtoRequest.getLogin());
-
-
+//7. Création de compte : Login Ko
+        if (userLogin != null){
+            throw new ResponseMessage("Login " + userFormDtoRequest.getLogin() +"' is not valid");
+        }
         User useEntity = modelMapper.map(userFormDtoRequest,User.class);
         useEntity.setGroup(groupUser);
         User test = useEntity;
